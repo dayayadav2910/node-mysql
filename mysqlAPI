@@ -1,0 +1,37 @@
+// API in mysql
+
+const express =  require("express");
+const con = require("./mysqlconfig");
+const app = express();
+app.use(express.json());
+app.get('',(req,res)=>{
+    con.query("select *from cats",(err,result)=>{
+            if(err){
+                res.send("Error")
+            }
+            else{
+                res.send(result);            
+            }
+    })
+})
+app.post('/',(req,res)=>{
+    const data = req.body
+    con.query("insert INTO cats SET ?",data,(error,result,fields)=>{
+        if(error) error;
+        res.send(result);
+})
+});
+app.put('/:id',(req,res)=>{
+    const data = [req.body.name,req.body.owner,req.params.id]
+    con.query("update cats SET name = ?, owner=?  where id = ?", data,(error,result,fields)=>{
+        if(error) error;
+        res.send(result);
+    })
+});
+app.delete('/:id',(req,res)=>{
+    con.query("DELETE FROM cats WHERE id=" + req.params.id,(err,results,fields)=>{
+        if(err) err;
+        res.send(results);
+    })
+});
+app.listen(5000);
